@@ -48,25 +48,42 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
-        if (await _users.Find(u => u.Email == request.Email).AnyAsync())
+        try 
         {
-            return BadRequest(new { message = "Bu email adresi zaten kullanımda" });
+            _logger.LogInformation($"Register attempt for email: {request.Email}");
+
+            if (await _users.Find(u => u.Email == request.Email).AnyAsync())
+            {
+                _logger.LogWarning($"Email already exists: {request.Email}");
+                return BadRequest(new { message = "Bu email adresi zaten kullanımda" });
+            }
+
+            if (await _users.Find(u => u.Username == request.Username).AnyAsync())
+            {
+                _logger.LogWarning($"Username already exists: {request.Username}");
+                return BadRequest(new { message = "Bu kullanıcı adı zaten kullanımda" });
+            }
+
+            var user = new User
+            {
+                Username = request.Username,
+                Email = request.Email,
+                PasswordHash = HashPassword(request.Password),
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            await _users.InsertOneAsync(user);
+            _logger.LogInformation($"User registered successfully: {request.Email}");
+            
+            return Ok(new { message = "Kayıt başarılı" });
         }
-
-        if (await _users.Find(u => u.Username == request.Username).AnyAsync())
+        catch (Exception ex)
         {
-            return BadRequest(new { message = "Bu kullanıcı adı zaten kullanımda" });
+            _logger.LogError($"Register error: {ex.Message}");
+            _logger.LogError($"Stack trace: {ex.StackTrace}");
+            throw;
         }
-
-        var user = new User
-        {
-            Username = request.Username,
-            Email = request.Email,
-            PasswordHash = HashPassword(request.Password)
-        };
-
-        await _users.InsertOneAsync(user);
-        return Ok(new { message = "Kayıt başarılı" });
     }
 
     [HttpPost("verify")]

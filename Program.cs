@@ -94,7 +94,26 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Önemli: CORS middleware'ini en üste taşıyalım
+// Global exception handler
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next();
+    }
+    catch (Exception ex)
+    {
+        context.Response.StatusCode = 500;
+        await context.Response.WriteAsJsonAsync(new 
+        { 
+            message = "Bir hata oluştu",
+            error = ex.Message,
+            stackTrace = app.Environment.IsDevelopment() ? ex.StackTrace : null
+        });
+    }
+});
+
+// CORS'u en başa al
 app.UseCors("AllowAll");
 
 // Diğer middleware'ler
