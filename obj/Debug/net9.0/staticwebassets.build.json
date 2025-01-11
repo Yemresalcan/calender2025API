@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "G2NiD6wXWgzQB1lSq3Qgp1N3q1Z1RiHmiGBoShTP3Ok=",
+  "Source": "CalendarAPI",
+  "BasePath": "_content/CalendarAPI",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
