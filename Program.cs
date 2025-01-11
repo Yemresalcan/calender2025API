@@ -85,10 +85,7 @@ builder.Services.AddCors(options =>
         builder =>
         {
             builder
-                .WithOrigins(
-                    "https://calender2025-tau.vercel.app",
-                    "http://localhost:5173"
-                )
+                .SetIsOriginAllowed(_ => true)
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials();
@@ -97,14 +94,16 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Önemli: CORS middleware'ini en üste taşıyalım
+app.UseCors("AllowAll");
+
+// Diğer middleware'ler
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseCors("AllowAll");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
