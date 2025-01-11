@@ -14,7 +14,14 @@ builder.WebHost.UseUrls($"http://+:{port}");
 
 // MongoDB Configuration
 var mongoDbSettings = builder.Configuration.GetSection("MongoDbSettings").Get<MongoDbSettings>();
-var client = new MongoClient(mongoDbSettings.ConnectionString);
+var settings = MongoClientSettings.FromUrl(new MongoUrl(mongoDbSettings.ConnectionString));
+settings.ServerApi = new ServerApi(ServerApiVersion.V1);
+settings.SslSettings = new SslSettings
+{
+    EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12
+};
+
+var client = new MongoClient(settings);
 var database = client.GetDatabase(mongoDbSettings.DatabaseName);
 
 // Register MongoDB
