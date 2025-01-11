@@ -84,10 +84,14 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll",
         builder =>
         {
-            builder.WithOrigins(Environment.GetEnvironmentVariable("CORS_ORIGIN") ?? "http://localhost:5173")
-                   .AllowAnyMethod()
-                   .AllowAnyHeader()
-                   .AllowCredentials();
+            builder
+                .WithOrigins(
+                    "https://calender2025-tau.vercel.app",
+                    "http://localhost:5173"
+                )
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials();
         });
 });
 
